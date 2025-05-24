@@ -1,7 +1,6 @@
 package com.rmit;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class Person {
@@ -59,24 +58,12 @@ public class Person {
         if (month < 1 || month > 12) return false;
         if (day < 1 || day > 31) return false;
 
-        try {
-            FileWriter fw = new FileWriter("Person.txt", false);
-            fw.write("Person ID:" + id + "\n");
-            fw.write("First Name: " + fname + "\n");
-            fw.write("Last Name: " + lname + "\n");
-            fw.write("Address: " + residence + "\n");
-            fw.write("Birth date: " + birthd + "\n");
-            fw.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-
+        writePersonDetails(fname, lname, id, residence, birthd);
 
         return true;
     }
 
     public boolean updatePersonDetails(String newFirstName, String newLastName, String newPersonID, String newAddress, String newBirthDate) {
-        //if (!addPerson()) return false;
         String updatedFirstName = (newFirstName != null) ? newFirstName : this.firstName;
         String updatedLastName = (newLastName != null) ? newLastName : this.lastName;
         String updatedPersonID = (newPersonID != null) ? newPersonID : this.personID;
@@ -88,21 +75,80 @@ public class Person {
         //1 & 2
         int age = getAge(updatedBirthDate);
         if (age < 18) return false;
-        else {
-            // update age, then return.
+
+        if (!updatedBirthDate.equals(this.birthDate)) {
+            File file = new File("Person.txt");
+            List<String> lines = new ArrayList<>();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith("Birth date: "))
+                        lines.add("Birth date: " + updatedBirthDate);
+                    else
+                        lines.add(line);
+                }
+            } catch (IOException exception) {
+                exception.printStackTrace();
+                return false;
+            }
+
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) {
+                for (String line : lines) {
+                    bw.write(line);
+                    bw.newLine();
+                }
+            }
+            catch (IOException exception) {
+                exception.printStackTrace();
+                return false;
+            }
+
+            this.birthDate = updatedBirthDate;
+            return true;
         }
 
         //3
-        char c = personID.charAt(0);
-        if (Character.isDigit(c)) {
-            int digit = Character.getNumericValue(c);
-            if (digit % 2 == 0) return false;
+        if (!updatedPersonID.equals(this.personID)) {
+            char c = updatedPersonID.charAt(0);
+            if (Character.isDigit(c)) {
+                int digit = Character.getNumericValue(c);
+                if (digit % 2 != 0) {
+                    this.personID = updatedPersonID;
+                }
+                else {
+                    System.out.println("Cant update person ID");
+                }
+            }
         }
 
+        this.firstName = updatedFirstName;
+        this.lastName = updatedLastName;
+        this.address = updatedAddress;
+        this.personID = updatedPersonID;
 
-
+        writePersonDetails(updatedFirstName, updatedLastName, updatedPersonID, updatedAddress, updatedBirthDate);
 
         return true;
+    }
+
+    public String addDemeritPoints() {
+        return "Success";
+    }
+
+    private void writePersonDetails(String updatedFirstName, String updatedLastName, String updatedPersonID, String updatedAddress, String updatedBirthDate) {
+        try {
+            FileWriter fw = new FileWriter("Person.txt", false);
+            fw.write("Person ID: " + updatedPersonID + "\n");
+            fw.write("First Name: " + updatedFirstName + "\n");
+            fw.write("Last Name: " + updatedLastName + "\n");
+            fw.write("Address: " + updatedAddress + "\n");
+            fw.write("Birth date: " + updatedBirthDate + "\n");
+            fw.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     private int getAge(String bd) {
@@ -123,10 +169,6 @@ public class Person {
         return age;
     }
 
-    public String addDemeritPoints() {
-        return "Success";
-    }
-
     public boolean checkBirthDate(String bday) {
         if (!bday.matches("\\d{2}-\\d{2}-\\d{4}")) return false;
         return true;
@@ -140,9 +182,11 @@ public class Person {
         String lastName = "Smith";
 
         Person person = new Person(testID, firstName, lastName, testResidence, testBirthDate);
+        person.addPerson(firstName, lastName, testID, testResidence, testBirthDate);
 
-        boolean result = person.addPerson(firstName, lastName, testID, testResidence, testBirthDate);
-        System.out.println("Add Person Result: " + result);
+        person.updatePersonDetails(firstName, lastName, testID, testResidence, "10-10-2000");
+
     }
+
 
 }

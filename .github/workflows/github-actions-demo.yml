@@ -22,7 +22,7 @@ jobs:
 
       - name: Run tests
         run: mvn test
-        working-directory: "assignment4 [numbers]"
+        working-directory: assignment4
         # This step runs the command mvn test, which is a Maven command to run the tests in your project.
         # Maven is a build automation tool used primarily for Java projects. 
         # The tests are defined in your project's source code and will be executed by Maven.

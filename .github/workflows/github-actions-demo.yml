@@ -21,8 +21,9 @@ jobs:
           java-version: '17'  # The version of Java to install in the job runner.
 
       - name: Run tests
-        run: mvn test
-        working-directory: assignment4 [numbers]
+        run: | 
+          cd "assignment4 [numbers]"
+          mvn test
         # This step runs the command mvn test, which is a Maven command to run the tests in your project.
         # Maven is a build automation tool used primarily for Java projects. 
         # The tests are defined in your project's source code and will be executed by Maven.

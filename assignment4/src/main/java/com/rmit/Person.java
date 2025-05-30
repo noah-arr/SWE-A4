@@ -94,12 +94,12 @@ public class Person {
             return true;
         }
 
-        // only update ID if first digit is odd
+        // only update ID if first digit is even
         if (!updatedPersonID.equals(this.personID)) {
             char c = updatedPersonID.charAt(0);
             if (Character.isDigit(c)) {
                 int digit = Character.getNumericValue(c);
-                if (digit % 2 != 0) {
+                if (digit % 2 == 0) {
                     this.personID = updatedPersonID;
                 }
                 else {

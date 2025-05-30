@@ -91,7 +91,7 @@ public class Person {
             }
 
             this.birthDate = updatedBirthDate;
-            return true;
+            return true; // change bday and return true
         }
 
         // only update ID if first digit is even
